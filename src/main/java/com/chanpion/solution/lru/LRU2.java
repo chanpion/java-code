@@ -28,9 +28,7 @@ public class LRU2<K, V> {
     }
 
     public void put(K key, V value) {
-        if (map.containsKey(key)) {
-            map.remove(key);
-        }
+        map.remove(key);
         if (map.size() == capacity) {
             map.remove(map.keySet().iterator().next());
         }
