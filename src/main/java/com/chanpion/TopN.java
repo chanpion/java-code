@@ -6,6 +6,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 /**
+ * 蚂蚁
+ * 10亿数取最大的前100个
  * @author April Chen
  * @date 2020/7/19 20:49
  */

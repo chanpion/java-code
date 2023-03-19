@@ -1,6 +1,7 @@
 package com.chanpion;
 
 /**
+ * 蚂蚁-两个线程交替输出奇偶数
  * @author April Chen
  * @date 2020/7/19 20:28
  */
