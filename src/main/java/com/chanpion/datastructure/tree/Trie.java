@@ -1,4 +1,4 @@
-package com.chanpion.datastructure;
+package com.chanpion.datastructure.tree;
 
 import java.util.HashMap;
 import java.util.Map;
