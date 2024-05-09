@@ -12,45 +12,68 @@ import java.util.LinkedList;
  */
 public class FindTreeLocation {
 
-    public Location findLocation(TreeNode root, int target) {
+    public static void main(String[] args) {
+        TreeNode node1 = new TreeNode(1);
+        TreeNode node2 = new TreeNode(2);
+        TreeNode node4 = new TreeNode(4);
+        TreeNode node42 = new TreeNode(4);
+        TreeNode node6 = new TreeNode(6);
+        TreeNode node8 = new TreeNode(8);
+
+        node1.left = node2;
+        node1.right = node4;
+        node2.left = node42;
+        node2.right = node6;
+        node4.right = node8;
+
+
+        TreeNodeWithLocation treeNodeWithLocation = findLocation(node1, 4);
+        if (treeNodeWithLocation == null) {
+            System.out.println("not found");
+            return;
+        }
+        System.out.println("location, row : " + treeNodeWithLocation.row + " , col: " + treeNodeWithLocation.col);
+    }
+
+    public static TreeNodeWithLocation findLocation(TreeNode root, int target) {
         if (root == null) {
             return null;
         }
-        LinkedList<TreeNode> queue = new LinkedList<>();
-        queue.offer(root);
-        int row = 0;
-        int currentTotal = 1;
-        int currentNum = 1;
-        int nextTotal = 0;
-        while (queue.peek() != null) {
-            TreeNode node = queue.poll();
-            currentNum--;
+        LinkedList<TreeNodeWithLocation> queue = new LinkedList<>();
+
+        TreeNodeWithLocation treeNodeWithLocation = new TreeNodeWithLocation(root, 1, 0);
+        queue.offer(treeNodeWithLocation);
+        while (!queue.isEmpty()) {
+            TreeNodeWithLocation p = queue.poll();
+            TreeNode node = p.node;
             if (node.val == target) {
-                return new Location(row, currentTotal - currentNum);
+                return p;
             }
-            if (currentNum == 0) {
-                row++;
-                currentTotal = nextTotal;
-                currentNum = currentTotal;
-                nextTotal = 0;
-            }
-            if (node.left != null) {
-                queue.offer(node.left);
-                nextTotal++;
-            } else if (node.right != null) {
-                queue.offer(node.right);
-                nextTotal++;
+            int level = p.row;
+
+            if (p.node.left != null) {
+                queue.offer(new TreeNodeWithLocation(p.node.left, level + 1, p.col * 2));
             }
 
+            if (p.node.right != null) {
+                queue.offer(new TreeNodeWithLocation(p.node.right, level + 1, p.col * 2 + 1));
+            }
         }
         return null;
     }
 
-    static class Location {
+    static class TreeNodeWithLocation {
+        TreeNode node;
         int row;
         int col;
 
-        public Location(int row, int col) {
+        public TreeNodeWithLocation(TreeNode node, int row, int col) {
+            this.node = node;
+            this.row = row;
+            this.col = col;
+        }
+
+        public TreeNodeWithLocation(int row, int col) {
             this.row = row;
             this.col = col;
         }

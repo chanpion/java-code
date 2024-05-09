@@ -1,9 +1,11 @@
 package com.chanpion.leetcode;
 
-import com.chanpion.Solution;
+import com.chanpion.solution.FindTreeLocation;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 
 /**
  * @author April Chen
@@ -28,6 +30,31 @@ public class BinaryTree {
         inorder(root.left, list);
         list.add(root.val);
         inorder(root.right, list);
+    }
+
+    public static List<Integer> levelOrder(TreeNode root) {
+        if (root == null) {
+            return null;
+        }
+        List<Integer> list = new ArrayList<>();
+        Queue<TreeNode> queue = new LinkedList<>();
+        queue.offer(root);
+        int size = 0;
+        while (!queue.isEmpty()) {
+            TreeNode node = queue.poll();
+            list.add(node.val);
+            if (node.left != null) {
+                queue.offer(node.left);
+            }
+            if (node.right != null) {
+                queue.offer(node.right);
+            }
+            if (node.left == null && node.right == null) {
+                size++;
+            }
+        }
+
+        return list;
     }
 
     /**
@@ -147,6 +174,169 @@ public class BinaryTree {
         return hasPathSum(root.left, sum - root.val) || hasPathSum(root.right, sum - root.val);
     }
 
+    /**
+     * 带层数的层序遍历
+     */
+    public static void levelorderWithLevel2(TreeNode root) {
+        if (root == null) {
+            return;
+        }
+        Queue<TreeNode> nodeQueue = new LinkedList<>();
+        Queue<Integer> levelQueue = new LinkedList<>();
+
+        nodeQueue.offer(root);
+        levelQueue.offer(1);
+
+        while (!nodeQueue.isEmpty()) {
+            TreeNode p = nodeQueue.poll();
+            int level = levelQueue.poll();
+            System.out.println(p + " + " + level);
+
+            if (p.left != null) {
+                nodeQueue.offer(p.left);
+                levelQueue.offer(level + 1);
+            }
+            if (p.right != null) {
+                nodeQueue.offer(p.right);
+                levelQueue.offer(level + 1);
+            }
+        }
+    }
+
+    /**
+     * 获取第 k 层结点的个数
+     *
+     * @param root
+     * @param k
+     * @return
+     */
+    public static int getKLevelSize(TreeNode root, int k) {
+        if (root == null) {
+            return 0;
+        }
+
+        Queue<TreeNodeWithLevel> queue = new LinkedList<>();
+        queue.offer(new TreeNodeWithLevel(root, 1));
+
+        //定义变量，记录 k 层结点的个数
+        int size = 0;
+        while (!queue.isEmpty()) {
+            TreeNodeWithLevel node = queue.poll();
+            TreeNode p = node.node;
+            int level = node.level;
+
+            if (level == k) {
+                //说明是第 k 层了
+                size++;
+            }
+            if (p.left != null) {
+                queue.offer(new TreeNodeWithLevel(p.left, level + 1));
+            }
+            if (p.right != null) {
+                queue.offer(new TreeNodeWithLevel(p.right, level + 1));
+            }
+        }
+        return size;
+    }
+
+    /**
+     * 获取叶子结点的个数
+     */
+    public static int leafSizeOf(TreeNode root) {
+        if (root == null) {
+            return 0;
+        }
+        Queue<TreeNode> queue = new LinkedList<>();
+        queue.offer(root);
+        int size = 0;
+        while (!queue.isEmpty()) {
+            TreeNode p = queue.poll();
+            if (p.left == null && p.right == null) {
+                size++;
+            }
+            if (p.left != null) {
+                queue.offer(p.left);
+            }
+            if (p.right != null) {
+                queue.offer(p.right);
+            }
+        }
+        return size;
+    }
+
+
+    /**
+     * 树的高度
+     *
+     * @param root
+     * @return
+     */
+    public static int heightOf(TreeNode root) {
+        if (root == null) {
+            return 0;
+        }
+        Queue<TreeNodeWithLevel> queue = new LinkedList<>();
+        queue.offer(new TreeNodeWithLevel(root, 1));
+
+        //定义一个变量记录 height
+        //height 的值可以根据 level 确定
+        int height = -1;
+        while (!queue.isEmpty()) {
+            TreeNodeWithLevel node = queue.poll();
+            TreeNode p = node.node;
+            int level = node.level;
+
+            height = level;
+
+            if (p.left != null) {
+                queue.offer(new TreeNodeWithLevel(p.left, level + 1));
+            }
+            if (p.right != null) {
+                queue.offer(new TreeNodeWithLevel(p.right, level + 1));
+            }
+
+        }
+        //此时 height 就为最后一个 level ，即最大的 level
+        return height;
+    }
+
+    /**
+     * 判断一棵树是否是完全二叉树
+     * 思路：将所有元素依次加入队列，当取出的元素为 null 时停止元素添加。因为二叉树碰到 null 有两种情况：
+     * <p>
+     * null 之后所有元素也都为 null，则说明是完全二叉树
+     * null 之后还有元素,则说明不是完全二叉树
+     */
+    public static boolean isCompleteTree(TreeNode root) {
+        if (root == null) {
+            return true;
+        }
+        Queue<TreeNode> queue = new LinkedList<>();
+        queue.offer(root);
+
+        //循环终止的条件，从队列中取出的元素是 null
+        while (true) {
+            TreeNode p = queue.poll();
+            if (p == null) {
+                break;
+            }
+            //因为这里需要根据本身的树进行判断，所以不用再判断左右孩子是否为 null
+            queue.offer(p.left);
+            queue.offer(p.right);
+        }
+
+        //判断取出元素为 null 后，其后面是否还有元素，即判断后面元素是否 == null
+        //当后面元素存在 != null 时，说明不是完全二叉树，返回 false
+        //当后面元素都 == null 时，说明是完全二叉树，返回 true
+        while (!queue.isEmpty()) {
+            TreeNode q = queue.poll();
+            if (q != null) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     static class TreeNode {
         int val;
         TreeNode left;
@@ -162,4 +352,21 @@ public class BinaryTree {
             this.right = right;
         }
     }
+
+
+    static class TreeNodeWithLevel {
+        public TreeNode node;
+        public int level;
+
+        public TreeNodeWithLevel(TreeNode node, int level) {
+            this.node = node;
+            this.level = level;
+        }
+
+        @Override
+        public String toString() {
+            return String.format("%s-%d", node.toString(), level);
+        }
+    }
+
 }
